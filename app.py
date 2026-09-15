@@ -35,4 +35,6 @@ demo = gr.ChatInterface(
 )
 
 demo.launch()
+app = demo.app
+
 
