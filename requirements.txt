@@ -1,5 +1,4 @@
 langchain
 langchain_openai
 gunicorn
-flask
 langchain_community
