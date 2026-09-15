@@ -1,39 +1,38 @@
-from flask import Flask, request, jsonify
+import gradio as gr
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-app = Flask(__name__)
 
-# 1. Create the Prompt Template
-prompt = ChatPromptTemplate.from_messages([
-      ("system", "You are a helpful assistant that provides step-by-step solutions to math and science problems."),
-      ("user", "{problem}")
-])
+# 1. Initialize the Model (using gpt-4o for multimodality)
+model = ChatOpenAI(model="gpt-4o")
 
-# 2. Initialize the Model
-model = ChatOpenAI(model="gpt-4o-mini")
-
-# 3. Create the Output Parser
+# 2. Create the Output Parser
 output_parser = StrOutputParser()
 
-# 4. Combine into a Chain
-chain = prompt | model | output_parser
+# 3. Handle Multimodal Input
+def chat_response(message, history):
+    text = message["text"]
+    # Image handling logic can be added here
+    response = model.invoke(text)
+    return output_parser.invoke(response)
 
-# 5. Run the chain with your problem
-problem_input = "solve 2x + 5 = 15"
-response = chain.invoke({"problem": problem_input})
-
-# 6. Print the result
-print(response)
-import gradio as gr
-
-demo = gr.Interface(
-    fn=lambda problem: chain.invoke({"problem": problem}),
-    inputs=[gr.Textbox(label="Enter a problem", lines=1)],
-    outputs=[gr.Textbox(label="Step-by-Step Solution", lines=10)],
-    flagging_mode="never",
-    title="Step-by-Step Problem Solver",
-    description="Enter any math or science problem and get a clear solution",article='Created by Rajan',theme='glass'
+# 4. Themes and Colors (Blue Background and Cream Text)
+custom_theme = gr.themes.Soft(
+    primary_hue="blue", 
+    secondary_hue="sky",
+).set(
+    body_background_fill="*neutral_950", # Very dark, appears blackish-blue
+    body_text_color="*primary_900",    # Creamy/light blue text
+    button_primary_background_fill="*primary_500",
 )
+
+# 5. Multimodal ChatInterface with Description and Theme
+demo = gr.ChatInterface(
+    fn=chat_response,
+    title="AI Assistant",
+    description="Created by Rajan", # Adds your name!
+    theme=custom_theme,
+    multimodal=True 
+)
+
 demo.launch()
 
