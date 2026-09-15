@@ -2,3 +2,5 @@ langchain
 langchain_openai
 gunicorn
 langchain_community
+gradio
+langchain-core
