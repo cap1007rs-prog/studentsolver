@@ -4,3 +4,4 @@ gunicorn
 langchain_community
 gradio
 langchain-core
+sqlalchemy
